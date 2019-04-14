@@ -24,25 +24,23 @@
         </div>
         <div>
             一级分类：
-            <select id="ctg1ForAttrList"  class="easyui-combobox" style="width:100px"
-                    data-options="valeFiled:'id',textField:'name',url:'getCatalog1',
-            onSelect:function(rec){
-                $('#ctg2ForAttrList').combobox('clear');
-                $('#ctg3ForAttrList').combobox('clear');
-                $('#ctg2ForAttrList').combobox('reload','getCatalog2?catalog1Id='+rec.id);
-            }"></select>
+            <select id="ctg1ForAttrList"   class="easyui-combobox"   style="width:100px" data-options="valueField:'id',textField:'name',url:'getCatalog1',
+    onSelect:function(rec){
+    $('#ctg2ForAttrList').combobox('clear');
+$('#ctg3ForAttrList').combobox('clear');
+            $('#ctg2ForAttrList').combobox('reload','getCatalog2?catalog1Id='+rec.id);
+       }"  ></select>
             二级分类：
-            <select name="ctg2ForAttrList" id="ctg2ForAttrList"  class="easyui-combobox"
-                    data-options="valueField:'id',textField:'name',
-                        onSelect:function(rec){
-                            $('#ctg3ForAttrList').combobox('clear');
-                            $('#ctg3ForAttrList').combobox('reload','getCatalog3?catalog2Id='+rec.id);
-                         }" style="width:100px" ></select>
+            <select name="ctg2ForAttrList" id="ctg2ForAttrList"  class="easyui-combobox" data-options="valueField:'id',textField:'name',
+   onSelect:function(rec){
+    $('#ctg3ForAttrList').combobox('clear');
+            $('#ctg3ForAttrList').combobox('reload','getCatalog3?catalog2Id='+rec.id);
+       }"    style="width:100px" ></select>
             三级分类：
-            <select name="ctg3ForAttrList" id="ctg3ForAttrList"  class="easyui-combobox" data-options="valueField:'id',textField:'name'"
-                    style="width:100px" ></select>
+            <select name="ctg3ForAttrList" id="ctg3ForAttrList"  class="easyui-combobox" data-options="valueField:'id',textField:'name'"    style="width:100px" ></select>
             <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="javascript:reloadAttrList()">刷新属性列表</a>
         </div>
+
     </div>
 
 </body>
@@ -52,8 +50,8 @@
     function reloadAttrList() {
 
         //获取三级分类id
-        var catalog3test = $("#ctg3ForAttrList").val();
-        console.log(catalog3test);
+        //var catalog3test = $("#ctg3ForAttrList").val();//无效
+        //console.log(catalog3test);
         var catalog3 = $("#ctg3ForAttrList").combobox('getValue');
         //根据三级分类id查询平台属性集合
         $("#dg").datagrid({url: 'attrInfoList?catalog3Id='+catalog3});
