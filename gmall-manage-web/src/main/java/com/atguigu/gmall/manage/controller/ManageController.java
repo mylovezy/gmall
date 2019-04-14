@@ -52,4 +52,12 @@ public class ManageController {
         return manageService.getAttrList(catalog3Id);
     }
 
+    @RequestMapping("saveAttrInfo")
+    @ResponseBody
+    public void saveAttrInfo(BaseAttrInfo baseAttrInfo){
+        manageService.saveAttrInfo(baseAttrInfo);
+    }
+
+
+
 }
