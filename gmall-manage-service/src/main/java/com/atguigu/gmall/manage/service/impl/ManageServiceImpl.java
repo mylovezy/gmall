@@ -1,10 +1,7 @@
 package com.atguigu.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.atguigu.gmall.bean.BaseAttrInfo;
-import com.atguigu.gmall.bean.BaseCatalog1;
-import com.atguigu.gmall.bean.BaseCatalog2;
-import com.atguigu.gmall.bean.BaseCatalog3;
+import com.atguigu.gmall.bean.*;
 import com.atguigu.gmall.manage.mapper.*;
 import com.atguigu.gmall.service.ManageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,5 +54,41 @@ public class ManageServiceImpl implements ManageService {
         baseAttrInfo.setCatalog3Id(catalog3Id);
         List<BaseAttrInfo> baseAttrInfoList =baseAttrInfoMapper.select(baseAttrInfo);
         return baseAttrInfoList;
+    }
+
+    /**
+     * 保存平台属性 平台属性值
+     * 保存和编辑共用一个方法 --》区分
+     * @param baseAttrInfo
+     */
+    @Override
+    public void saveAttrInfo(BaseAttrInfo baseAttrInfo) {
+        //根据id来判断 操作baseAttrInfo 表
+        if(baseAttrInfo.getId() != null && baseAttrInfo.getId().length() > 0){
+            //编辑
+            baseAttrInfoMapper.updateByPrimaryKeySelective(baseAttrInfo);
+        }else {
+            //添加 保证主键自增 必须使id为null
+            baseAttrInfo.setId(null);
+            baseAttrInfoMapper.insertSelective(baseAttrInfo);
+
+        }
+
+        //这里的删除 实际是将原来的数据删除，仔重新插入数据
+        //操作baseAttrValue == 先将baseAttrValue中的数据删除
+        // 删除条件 baseAttrValue.attrId = baseAttrInfo.id
+        BaseAttrValue baseAttrValue = new BaseAttrValue();
+        baseAttrValue.setAttrId(baseAttrInfo.getId());
+        baseAttrValueMapper.delete(baseAttrValue);
+        //先得到平台属性值集合
+        List<BaseAttrValue> attrValueList = baseAttrInfo.getAttrValueList();
+        if(attrValueList != null && attrValueList.size() >0){
+            for (BaseAttrValue attrValue : attrValueList) {
+                attrValue.setId(null);
+                attrValue.setAttrId(baseAttrInfo.getId());
+                baseAttrValueMapper.insertSelective(attrValue);
+            }
+        }
+
     }
 }
