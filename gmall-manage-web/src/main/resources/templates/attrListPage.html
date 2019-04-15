@@ -69,13 +69,11 @@ $('#ctg3ForAttrList').combobox('clear');
     </div>
 
 
-
 </body>
 
 <script type="text/javascript">
 
     function saveAttr() {
-
         var baseAttrInfo = {};
         baseAttrInfo["id"] = $("#attrId").val();
         baseAttrInfo["attrName"] = $("#attrName").val();
@@ -87,13 +85,12 @@ $('#ctg3ForAttrList').combobox('clear');
             baseAttrInfo["attrValueList["+i+"].id"] = attrValueRows[i].id;
             baseAttrInfo["attrValueList["+i+"].valueName"] = attrValueRows[i].valueName;
         }
-
+        //console.log('需要添加的属性值'+baseAttrInfo);
         $.post("saveAttrInfo",baseAttrInfo,function (data) {
             //关闭模态框
-            $("#dlg").datagrid('close');
+            $("#dlg").dialog('close');
             //加载dg的数据
             $("#dg").datagrid('reload');
-            
         });
     }
     
@@ -117,7 +114,7 @@ $('#ctg3ForAttrList').combobox('clear');
             return;
         }
 
-        //打开弹框
+        //打开模态框
         $("#dlg").dialog('open');
         //进行初始化操作
         $("#attrId").val("");
@@ -129,42 +126,30 @@ $('#ctg3ForAttrList').combobox('clear');
     }
 
     function initAttrValueDatagrid(){
-        //加载旧数据行  加载本地数据 移除旧数据
         $('#dg_av').datagrid('loadData', { total: 0, rows: [] });
-        datagrid = $('#dg_av').datagrid({
+        datagrid = $("#dg_av").datagrid({
             columns:[[
-                {field:'id',title:'编号', width:'20%'},
-                {field:'valueName',title:'属性值名称', width:'80%',
+                { field:'id',title:'编号',width:'20%'},
+                { field:'valueName',title:'属性值名称',width:'80%',
                     editor: {
                         type: 'validatebox', options: { required: true}  //必填项
                     }
                 }
             ]],
-            toolbar: [{
-                iconCls: 'icon-add',
-                text: '添加',
-                handler: function(){
-                    //添加空白行
-                    datagrid.datagrid('appendRow',{
-                        id:'',
-                        valueName:''
-                    })
+            toolbar:[{text:'添加',iconCls:'icon-add',
+                handler:function () {
+                    datagrid.datagrid('appendRow',{id:'',valueName:''});
                 }
-            },'-',{
-                iconCls: 'icon-remove',
-                text:'删除',
-                handler: function(){
-                    //删除 getSelected rowIndex deleteRow
-                    var row = datagrid.datagrid('getSelected');
-                    if(row){
-                        //获取当前行的索引
-                        var rowIndex = datagrid.datagrid('getRowIndex',row);
-                        //删除索引
-                        datagrid.datagrid('deleteRow',rowIndex);
+            },'-',
+                {text:'删除',iconCls:'icon-remove',
+                    handler:function () {
+                        var row = datagrid.datagrid('getSelected');
+                        if (row) {
+                            var rowIndex = datagrid.datagrid('getRowIndex', row);
+                            datagrid.datagrid('deleteRow', rowIndex);
+                        }
                     }
-
-                }
-            }],
+                }],
             onDblClickRow: function (rowIndex, rowData) {
                 //双击开启编辑行
                 datagrid.datagrid("beginEdit", rowIndex);
@@ -174,27 +159,44 @@ $('#ctg3ForAttrList').combobox('clear');
                     datagrid.datagrid('endEdit',rowIndex);
                 });
             }
-
-
         });
-
-
-
-
     }
+
 
     //修改属性
     function editAttrInfo() {
-        
+
+        //check 是否选中 三级分类的id
+        if(!checkBeforeDialog()){
+            //如果没有选中  弹框 友好提示
+            $.messager.alert('警告','需要选中三级分类id');
+            return;
+        }
+
+        //打开模态框
+        $("#dlg").dialog('open');
+        //将平台属性名 hui xian value = 选中的属性名称
+        //获取选中的行
+        var attrInfoRow = $("#dg").datagrid('getSelected');
+        //将选中的属性名称-->
+        $("#attrName").textbox('setValue',attrInfoRow.attrName);
+        //baseAttrValue.attrId
+        $("#attrId").val(attrInfoRow.id);
+
+        //将平台属性值加载到列表 dg_av 通过attrId去查询baseAttrValue的数据 后台实现
+        $('#dg_av').datagrid({url:'getAttrValueList?attrId='+attrInfoRow.id});
+
+        initAttrValueDatagrid();
+
     }
 
     function checkBeforeDialog(){
         var catalog3 = $("#ctg3ForAttrList").combobox('getValue');
+        //console.log('三级分类id'+catalog3);
         if(catalog3 == ''){
             return false;
-        }else{
-            return true;
         }
+        return true;
     }
 
 
