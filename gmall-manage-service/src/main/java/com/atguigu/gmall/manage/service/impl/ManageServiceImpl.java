@@ -6,6 +6,7 @@ import com.atguigu.gmall.manage.mapper.*;
 import com.atguigu.gmall.service.ManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +26,9 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     private BaseAttrValueMapper baseAttrValueMapper;
+    
+    @Autowired
+    private SpuInfoMapper spuInfoMapper;
 
     @Override
     public List<BaseCatalog1> getBaseCatalog1() {
@@ -90,5 +94,23 @@ public class ManageServiceImpl implements ManageService {
             }
         }
 
+    }
+
+    @Override
+    public BaseAttrInfo getAttrInfo(String attrId) {
+
+        BaseAttrInfo baseAttrInfo = baseAttrInfoMapper.selectByPrimaryKey(attrId);
+        //先给attrValueList属性 付值
+        BaseAttrValue baseAttrValue = new BaseAttrValue();
+        baseAttrValue.setAttrId(baseAttrInfo.getId());
+        List<BaseAttrValue> attrValueList = baseAttrValueMapper.select(baseAttrValue);
+        baseAttrInfo.setAttrValueList(attrValueList);
+        return baseAttrInfo;
+    }
+
+    @Override
+    public List<SpuInfo> getSpuInfoList(SpuInfo spuInfo) {
+        List<SpuInfo> spuInfoList  = spuInfoMapper.select(spuInfo);
+        return spuInfoList ;
     }
 }
