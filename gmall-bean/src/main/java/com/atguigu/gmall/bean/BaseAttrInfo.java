@@ -1,18 +1,31 @@
 package com.atguigu.gmall.bean;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 public class BaseAttrInfo implements Serializable {
 
     @Id
     @Column
+    //获取主键自动增长
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     @Column
     private String attrName;
     @Column
     private String catalog3Id;
+
+    @Transient
+    private List<BaseAttrValue> attrValueList;
+
+    public List<BaseAttrValue> getAttrValueList() {
+        return attrValueList;
+    }
+
+    public void setAttrValueList(List<BaseAttrValue> attrValueList) {
+        this.attrValueList = attrValueList;
+    }
 
     public String getId() {
         return id;
